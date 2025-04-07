@@ -5,6 +5,9 @@ use godot::prelude::*;
 use std::time::Instant;
 use std::{io::stdin, time::Duration};
 
+
+use std::net::{IpAddr, Ipv4Addr};
+
 use laminar::{ErrorKind, Packet, Socket, SocketEvent};
 
 mod consts;
@@ -15,7 +18,7 @@ fn client() -> Result<(), ErrorKind> {
 
     println!("Connected on {}", addr);
 
-    let server: std::net::SocketAddr = consts::SERVER.parse().unwrap();
+    let server: std::net::SocketAddr = addr;
 
     println!("Type a message and press Enter to send. Send `Bye!` to quit.");
 
@@ -47,7 +50,6 @@ fn client() -> Result<(), ErrorKind> {
         std::thread::sleep(Duration::from_millis(1000));
     }
 
-    Ok(())
 }
 
 fn printer() {
@@ -57,17 +59,11 @@ fn printer() {
     }
 }
 
-fn initClient() {
-    println!("Initiating client on port 12352"); // Prints to the Godot console
-    client();
-}
-
 #[derive(GodotClass)]
 #[class(base=Node)]
 struct Client {
-    server_address: String,
-    server_port: String,
-    client_port: String,
+    server_address: Ipv4Addr,
+    port: u16,
 }
 
 #[godot_api]
@@ -77,9 +73,20 @@ impl INode for Client {
 
         //std::thread::spawn(initClient);
         godot_print!("Client thread spawned!"); // Prints to the Godot console
+                                                //
+        Client()
 
-        Client {}
     }
 }
 
-impl Client {}
+
+fn initClient() {
+    println!("Initiating client on port 12352"); // Prints to the Godot console
+                                                 //
+    let client = Client{
+        server_address: Ipv4Addr::new(127, 0, 0, 1),
+        port: 5432
+        
+    }
+}
+

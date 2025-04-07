@@ -1,0 +1,9 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1743987033
+MainScene.tscn::PackedScene/PackedScene::7225580437296916357::1743982062::0::1::::<><><>0<>0<><>::
+rust.gdextension::GDExtension/GDExtension::5330697174458755896::1743981135::0::1::::<><><>0<>0<><>::
+::res://test/::1743982062
+editor_layout.cfg::TextFile/TextFile::-1::1743981135::0::1::::<><><>0<>0<><>::
+MainScene.tscn::PackedScene/PackedScene::7225580437296916357::1743982062::0::1::::<><><>0<>0<><>::uid://bjxkqw4gejabh::::res://test/ReloadTest.gd
+ReloadOrchestrator.gd::GDScript/GDScript::5294993590077043841::1743981135::0::1::::ReloadOrchestrator<>SceneTree<><>0<>0<><>::
+ReloadTest.gd::GDScript/GDScript::3066237908000253233::1743981135::0::1::::<>Node<><>0<>1<><>::
