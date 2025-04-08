@@ -2,18 +2,17 @@
 //! Technically, they both work the same.
 //! Note that in practice you don't want to implement a chat client using UDP.
 use godot::prelude::*;
+use std::time::Duration;
 use std::time::Instant;
-use std::{io::stdin, time::Duration};
 
-
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use laminar::{ErrorKind, Packet, Socket, SocketEvent};
 
 mod consts;
 
 fn client() -> Result<(), ErrorKind> {
-    let addr = "127.0.0.1:12352";
+    let addr: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 6543);
     let mut socket = Socket::bind(addr)?;
 
     println!("Connected on {}", addr);
@@ -29,8 +28,8 @@ fn client() -> Result<(), ErrorKind> {
         //s_buffer.clear();
         //stdin.read_line(&mut s_buffer)?;
         //let line = s_buffer.replace(|x| x == '\n' || x == '\r', "");
-
-        let payload: Vec<u8> = "TEST".into();
+        let la_chaine: String = "TEST".to_string();
+        let payload: Vec<u8> = la_chaine.into_bytes();
 
         socket.send(Packet::reliable_unordered(server, payload))?;
 
@@ -49,7 +48,6 @@ fn client() -> Result<(), ErrorKind> {
         }
         std::thread::sleep(Duration::from_millis(1000));
     }
-
 }
 
 fn printer() {
@@ -62,8 +60,7 @@ fn printer() {
 #[derive(GodotClass)]
 #[class(base=Node)]
 struct Client {
-    server_address: Ipv4Addr,
-    port: u16,
+    socket_address: SocketAddr,
 }
 
 #[godot_api]
@@ -74,19 +71,16 @@ impl INode for Client {
         //std::thread::spawn(initClient);
         godot_print!("Client thread spawned!"); // Prints to the Godot console
                                                 //
-        Client()
-
+                                                //
+                                                //
+        client();
+        Self {
+            socket_address: SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 6543),
+        }
     }
 }
 
-
-fn initClient() {
+fn init_client() {
     println!("Initiating client on port 12352"); // Prints to the Godot console
                                                  //
-    let client = Client{
-        server_address: Ipv4Addr::new(127, 0, 0, 1),
-        port: 5432
-        
-    }
 }
-
