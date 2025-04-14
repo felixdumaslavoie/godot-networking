@@ -17,7 +17,8 @@ fn client() -> Result<(), ErrorKind> {
 
     println!("Connected on {}", addr);
 
-    let server: std::net::SocketAddr = addr;
+    let server: std::net::SocketAddr =
+        SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 6545);
 
     println!("Type a message and press Enter to send. Send `Bye!` to quit.");
 
@@ -46,13 +47,6 @@ fn client() -> Result<(), ErrorKind> {
             Some(SocketEvent::Timeout(_)) => {}
             _ => println!("Silence.."),
         }
-        std::thread::sleep(Duration::from_millis(1000));
-    }
-}
-
-fn printer() {
-    loop {
-        println!("In loop!"); // Prints to the Godot console
         std::thread::sleep(Duration::from_millis(1000));
     }
 }

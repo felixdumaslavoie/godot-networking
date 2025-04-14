@@ -1,13 +1,12 @@
 //! Note that the terms "client" and "server" here are purely what we logically associate with them.
 //! Technically, they both work the same.
 //! Note that in practice you don't want to implement a chat client using UDP.
-use std::io::stdin;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::thread;
-use std::time::Instant;
 
 use laminar::{ErrorKind, Packet, Socket, SocketEvent};
 
-const SERVER: &str = "127.0.0.1:12351";
+const SERVER: std::net::SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 6545);
 
 fn server() -> Result<(), ErrorKind> {
     let mut socket = Socket::bind(SERVER)?;
