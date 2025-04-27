@@ -2,6 +2,7 @@
 //! Technically, they both work the same.
 //! Note that in practice you don't want to implement a chat client using UDP.
 use godot::prelude::*;
+use std::thread;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -62,19 +63,13 @@ impl INode for Client {
     fn init(base: Base<Node>) -> Self {
         godot_print!("Server node added!"); // Prints to the Godot console
 
-        //std::thread::spawn(initClient);
+        thread::spawn(client);
+
         godot_print!("Client thread spawned!"); // Prints to the Godot console
-                                                //
-                                                //
-                                                //
-        client();
         Self {
             socket_address: SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 6543),
         }
     }
 }
 
-fn init_client() {
-    println!("Initiating client on port 12352"); // Prints to the Godot console
-                                                 //
-}
+// https://doc.rust-lang.org/book/ch16-01-threads.html
