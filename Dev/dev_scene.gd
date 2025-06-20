@@ -24,8 +24,10 @@ func _process(delta: float) -> void:
 	ImGui.Begin("Peers")
 	for peer in instances["serveur"].get_peers():
 		
+		ImGui.SetNextItemOpen(true)
 		if ImGui.CollapsingHeader( "Client " + str(peer["id"]) ):
 			ImGui.LabelText(  str(peer["socket"].get_packet_ip()) + ":"+ str(peer["socket"].get_local_port()), "socket: ")
 			ImGui.LabelText(  "Lorem ipsum", "Position (x,y) " + ":" )
+			
 		
 	ImGui.End()

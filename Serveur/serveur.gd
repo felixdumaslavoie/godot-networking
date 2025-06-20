@@ -40,8 +40,10 @@ func _process(delta):
 		
 
 	for i in range(0, peers.size()):
-		
-		pass # Do something with the connected peers.
+		var packet = peers[0]["socket"].get_packet()
+		if (packet):
+			print(packet.get_string_from_utf8())
+			# Do something with the connected peers.
 
 
 func get_peers() -> Array : 

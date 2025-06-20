@@ -20,7 +20,13 @@ func _process(delta):
 		connected = true
 
 
-
+func send_input(inputs : Dictionary):
+	if connected: 
+		var serialized_inputs = JSON.stringify(inputs)
+		udp.put_packet(serialized_inputs.to_utf8_buffer())
+		
+		
+	
 
 var inputs : Array = []
 
