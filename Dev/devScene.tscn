@@ -4,3 +4,7 @@
 
 [node name="Dev" type="Node"]
 script = ExtResource("1_iinv1")
+
+[node name="ServerView" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="ServerView"]
