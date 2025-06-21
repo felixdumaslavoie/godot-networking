@@ -16,7 +16,7 @@ func createID() -> int :
 func addNewClient(peer : PacketPeerUDP) -> Dictionary :
 	var initPeer = {
 		"id" : createID(),
-		"socket": peer 
+		"socket": peer,
 	}
 	return initPeer
 
@@ -35,9 +35,6 @@ func _process(delta):
 		peer.put_packet(packet)
 		# Keep a reference so we can keep contacting the remote peer.
 		peers.append(addNewClient(peer))
-		
-		
-		
 
 	for i in range(0, peers.size()):
 		var packet = peers[0]["socket"].get_packet()

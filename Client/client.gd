@@ -5,8 +5,8 @@ extends Node
 var udp = PacketPeerUDP.new()
 var connected = false
 
-const PORT = 4242
 const HOST = "127.0.0.1"
+const PORT = 4242
 
 func _ready():
 	udp.connect_to_host(HOST, PORT)
@@ -25,17 +25,4 @@ func send_input(inputs : Dictionary):
 		var serialized_inputs = JSON.stringify(inputs)
 		udp.put_packet(serialized_inputs.to_utf8_buffer())
 		
-		
-	
-
-var inputs : Array = []
-
-func input_buffering(input : InputEventKey):
-
-	var newInput = {
-		"key" : input,
-		"timestamp": Time.get_unix_time_from_system()
-	}
-	
-	input.push_back(newInput)
 		

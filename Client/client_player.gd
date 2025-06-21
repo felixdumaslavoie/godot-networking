@@ -12,10 +12,16 @@ func _ready() -> void:
 func get_input():
 	var input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = input_direction * speed
+	
+	var normalizedVector = velocity.normalized()
+	var buttons = []
+	
 	if (velocity != Vector2(0.0, 0.0)):
 		var inputs_object = {
-			"x": velocity.x,
-			"y": velocity.y
+			"time": Time.get_unix_time_from_system(),
+			"sidemove": normalizedVector.x,
+			"upmove": normalizedVector.y,
+			"buttons": buttons,
 		}
 		$"../..".send_input(inputs_object)
 		
