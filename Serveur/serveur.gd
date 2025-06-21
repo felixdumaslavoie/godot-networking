@@ -5,6 +5,8 @@ extends Node
 var server = UDPServer.new()
 var peers = []
 
+const updateRate : int = 30 # In Hz
+
 var latestId : int = 0
 
 func createID() -> int :
@@ -38,9 +40,26 @@ func _process(delta):
 
 	for i in range(0, peers.size()):
 		var packet = peers[0]["socket"].get_packet()
-		if (packet):
-			print(packet.get_string_from_utf8())
-			# Do something with the connected peers.
+		if (packet):			
+			var json_string : Dictionary = {}
+
+			if (JSON.parse_string(packet.get_string_from_utf8()) != null ):
+			
+				json_string = JSON.parse_string(packet.get_string_from_utf8())
+			
+				if (json_string != null):
+					var data : Dictionary = json_string
+					if data:
+						var data_received = data
+						if typeof(data_received) == TYPE_DICTIONARY:
+							print(data_received)
+						else:
+							print("Error parsing data from client")
+							
+					else:
+						print("JSON Parse Error: ", data, " in ", json_string)
+				
+				# Do something with the connected peers.
 
 
 func get_peers() -> Array : 
