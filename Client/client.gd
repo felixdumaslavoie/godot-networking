@@ -28,3 +28,5 @@ func send_input(inputs : Dictionary):
 		udp.put_packet(serialized_inputs.to_utf8_buffer())
 		
 		
+func getClientPlayerLocation() -> Vector2 :
+		return $ClientScene/ClientPlayer.get_location()

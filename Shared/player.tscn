@@ -1,58 +1,62 @@
-[gd_scene load_steps=18 format=3 uid="uid://dfax7cksbqom0"]
+[gd_scene load_steps=19 format=3 uid="uid://qiqihf0h06h"]
 
-[ext_resource type="Script" uid="uid://c4uc46c2oqlvk" path="res://Client/client.gd" id="1_iyx2n"]
-[ext_resource type="Texture2D" uid="uid://ia0f6v4wi85o" path="res://Resources/Characters/SKIN DE BASE.png" id="2_e5p4w"]
-[ext_resource type="Script" uid="uid://bfqxno155d4c2" path="res://Client/client_player.gd" id="2_mfuie"]
+[ext_resource type="Script" uid="uid://cb4whir324fju" path="res://Shared/Player.gd" id="1_uxroe"]
+[ext_resource type="Shader" uid="uid://bodyw45iy5cp1" path="res://Client/shaders/client.gdshader" id="2_phbx4"]
+[ext_resource type="Texture2D" uid="uid://ia0f6v4wi85o" path="res://Resources/Characters/SKIN DE BASE.png" id="3_w5j76"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v7wex"]
+shader = ExtResource("2_phbx4")
+shader_parameter/my_color = Color(0.560241, 0.0328814, 0.233508, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mfuie"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(0, 165, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_165b5"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(288, 165, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hh18h"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(576, 165, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3d084"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(0, 559, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ftcd7"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(288, 559, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hpw26"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(576, 559, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cnlj4"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(0, 953, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q2xii"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(288, 953, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x4jta"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(576, 953, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6bdcl"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(0, 1347, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nnaa4"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(288, 1347, 288, 394)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kfs1q"]
-atlas = ExtResource("2_e5p4w")
+atlas = ExtResource("3_w5j76")
 region = Rect2(576, 1347, 288, 394)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_0sn4x"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_jq4l4"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -111,24 +115,18 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e5p4w"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ekd3l"]
 radius = 61.0
 height = 240.0
 
-[node name="Client" type="Node"]
-script = ExtResource("1_iyx2n")
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_uxroe")
 
-[node name="ClientScene" type="Node2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_v7wex")
+sprite_frames = SubResource("SpriteFrames_jq4l4")
+animation = &"walk_down"
 
-[node name="ClientPlayer" type="CharacterBody2D" parent="ClientScene"]
-motion_mode = 1
-script = ExtResource("2_mfuie")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientScene/ClientPlayer"]
-sprite_frames = SubResource("SpriteFrames_0sn4x")
-animation = &"walk_up"
-frame = 2
-frame_progress = 0.837273
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClientScene/ClientPlayer"]
-shape = SubResource("CapsuleShape2D_e5p4w")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_ekd3l")
+disabled = true

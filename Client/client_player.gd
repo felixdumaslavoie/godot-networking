@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 @export var speed = 400
 
-@export var location : Vector2  = $".".transform.origin
+@export var location : Vector2  = transform.origin
 	
 func _ready() -> void:
 	$AnimatedSprite2D.play("walk_right")
@@ -29,4 +29,8 @@ func get_input():
 func _physics_process(delta):
 	get_input()
 	move_and_slide()
+	location = position
+	
+func get_location() -> Vector2:
+	return location
 	

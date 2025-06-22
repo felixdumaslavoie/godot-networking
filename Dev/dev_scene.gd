@@ -43,7 +43,9 @@ func _process(delta: float) -> void:
 		ImGui.SetNextItemOpen(true)
 		if ImGui.CollapsingHeader( "Client " + str(peer["id"]) ):
 			ImGui.LabelText(  str(peer["socket"].get_packet_ip()) + ":"+ str(peer["socket"].get_local_port()), "socket: ")
-			ImGui.LabelText(  "Lorem ipsum", "Position (x,y) " + ":" )
+			ImGui.LabelText(  str(instances["client"].getClientPlayerLocation()), "Position client (x,y) " + ":" )
+			ImGui.LabelText(  "Lorem ipsum", "Position serveur (x,y) " + ":" )
+			
 	ImGui.End()
 	
 	get_input()

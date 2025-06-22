@@ -5,7 +5,9 @@ extends Node
 var server = UDPServer.new()
 var peers = []
 
-const updateRate : int = 30 # In Hz
+const TIME_STEP : int = 35 # In ms
+var time : float = Time.get_unix_time_from_system() 
+var deltaTime : float = 0
 
 var latestId : int = 0
 
@@ -16,9 +18,14 @@ func createID() -> int :
 
 
 func addNewClient(peer : PacketPeerUDP) -> Dictionary :
+	
+	var newPlayer = load("res://Shared/player.tscn").instantiate()
+	
 	var initPeer = {
 		"id" : createID(),
 		"socket": peer,
+		"inputs": [],
+		"Player": newPlayer
 	}
 	return initPeer
 
@@ -26,6 +33,8 @@ func _ready():
 	server.listen(4242)
 
 func _process(delta):
+	time = Time.get_unix_time_from_system() 
+	
 	server.poll() # Important!
 	if server.is_connection_available():
 		var peer : PacketPeerUDP = server.take_connection()
@@ -37,30 +46,56 @@ func _process(delta):
 		peer.put_packet(packet)
 		# Keep a reference so we can keep contacting the remote peer.
 		peers.append(addNewClient(peer))
-
+		
+	# Do something with the connected peers.
 	for i in range(0, peers.size()):
-		var packet = peers[0]["socket"].get_packet()
-		if (packet):			
+		var packet = peers[i]["socket"].get_packet()
+		if (packet):
 			var json_string : Dictionary = {}
-
-			if (JSON.parse_string(packet.get_string_from_utf8()) != null ):
 			
+			if (JSON.parse_string(packet.get_string_from_utf8()) != null ):
 				json_string = JSON.parse_string(packet.get_string_from_utf8())
 			
 				if (json_string != null):
 					var data : Dictionary = json_string
 					if data:
-						var data_received = data
-						if typeof(data_received) == TYPE_DICTIONARY:
-							print(data_received)
+						if typeof(data) == TYPE_DICTIONARY:
+							
+							var receivedData = {
+								"time": data["time"],
+								"sidemove": data["sidemove"],
+								"upmove": data["upmove"],
+								"buttons": data["buttons"]
+							}
+							peers[i]["inputs"].push_back(receivedData)
+							print(peers[i]["inputs"])
 						else:
 							print("Error parsing data from client")
 							
 					else:
 						print("JSON Parse Error: ", data, " in ", json_string)
-				
-				# Do something with the connected peers.
-
-
+		
+		# Update authoritative data 
+		var slicedInput = peers[i]["inputs"].pop_front() 
+		if (slicedInput != null):
+			peers[i]["Player"].process_inputs(slicedInput)
+			
+	#if time > timeStep, send authoritative data 
+	deltaTime = deltaTime + Time.get_unix_time_from_system() - time
+	
+	if (deltaTime >= TIME_STEP):
+		send_authoritative_data(null, null)
+		deltaTime = 0
+	
+	
+func update_authoritative_data(player, inputs):
+	player["process_inputs"].call(inputs)
+	
+	
+func send_authoritative_data(player, inputs):
+	for i in range(0, peers.size()):
+		var packet = JSON.stringify(peers[i]["Player"].get_state()).to_utf8_buffer()
+		peers[i].put_packet(packet)
+	 
 func get_peers() -> Array : 
 	return peers 
