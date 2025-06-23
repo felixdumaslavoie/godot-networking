@@ -4,6 +4,8 @@ extends CharacterBody2D
 @export var speed = 400
 
 @export var location : Vector2  = transform.origin
+
+var moving_flag = false
 	
 func _ready() -> void:
 	$AnimatedSprite2D.play("walk_right")
@@ -15,8 +17,8 @@ func get_input():
 	
 	var normalizedVector = velocity.normalized()
 	var buttons = []
-	
-	if (velocity != Vector2(0.0, 0.0)):
+
+	if (moving_flag):
 		var inputs_object = {
 			"time": Time.get_unix_time_from_system(),
 			"sidemove": normalizedVector.x,
@@ -24,7 +26,12 @@ func get_input():
 			"buttons": buttons,
 		}
 		$"../..".send_input(inputs_object)
-		
+	
+	if (velocity != Vector2(0.0, 0.0)):
+		moving_flag = true	
+	if (velocity == Vector2(0.0, 0.0)):
+		moving_flag = false	
+
 
 func _physics_process(delta):
 	get_input()

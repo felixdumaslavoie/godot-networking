@@ -20,6 +20,7 @@ func createID() -> int :
 func addNewClient(peer : PacketPeerUDP) -> Dictionary :
 	
 	var newPlayer = load("res://Shared/player.tscn").instantiate()
+	add_child(newPlayer)
 	
 	var initPeer = {
 		"id" : createID(),
@@ -49,6 +50,11 @@ func _process(delta):
 		
 	# Do something with the connected peers.
 	for i in range(0, peers.size()):
+		# Update authoritative data 
+		var slicedInput = peers[i]["inputs"].pop_front() 
+		if (slicedInput != null):
+			peers[i]["Player"].process_inputs(slicedInput)
+			
 		var packet = peers[i]["socket"].get_packet()
 		if (packet):
 			var json_string : Dictionary = {}
@@ -74,11 +80,6 @@ func _process(delta):
 							
 					else:
 						print("JSON Parse Error: ", data, " in ", json_string)
-		
-		# Update authoritative data 
-		var slicedInput = peers[i]["inputs"].pop_front() 
-		if (slicedInput != null):
-			peers[i]["Player"].process_inputs(slicedInput)
 			
 	#if time > timeStep, send authoritative data 
 	deltaTime = deltaTime + Time.get_unix_time_from_system() - time
