@@ -117,19 +117,22 @@ height = 240.0
 
 [node name="Client" type="Node"]
 script = ExtResource("1_iyx2n")
+HOST = null
+PORT = null
 
-[node name="ClientScene" type="Node2D" parent="."]
+[node name="ClientWorld" type="Node2D" parent="."]
 
-[node name="ClientPlayer" type="CharacterBody2D" parent="ClientScene"]
+[node name="ClientPlayer" type="CharacterBody2D" parent="ClientWorld"]
+z_index = 1
 motion_mode = 1
 script = ExtResource("2_mfuie")
 is_client = true
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientScene/ClientPlayer"]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientWorld/ClientPlayer"]
 sprite_frames = SubResource("SpriteFrames_0sn4x")
 animation = &"walk_down"
 frame = 1
 frame_progress = 0.69884
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClientScene/ClientPlayer"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClientWorld/ClientPlayer"]
 shape = SubResource("CapsuleShape2D_e5p4w")

@@ -11,6 +11,8 @@ var deltaTime : float = 0
 
 var latestId : int = 0
 
+var tick = 0
+
 func createID() -> int :
 	latestId += 1
 	return latestId
@@ -32,26 +34,34 @@ func addNewClient(peer : PacketPeerUDP) -> Dictionary :
 
 func _ready():
 	server.listen(4242)
+	
 
 func _process(delta):
+	tick += 1
 	server.poll() # Important!
 	if server.is_connection_available():
 		var peer : PacketPeerUDP = server.take_connection()
-		var packet : PackedByteArray = peer.get_packet()
-	
-		print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_local_port()])
-		print("Received data: %s" % [packet.get_string_from_utf8()])
-		# Reply so it knows we received the message.
-		peer.put_packet(packet)
-		# Keep a reference so we can keep contacting the remote peer.
+		#var packet : PackedByteArray = peer.get_packet()
 		peers.append(addNewClient(peer))
+		var id = {}
+		id["id"] = (latestId) 
+		var packet = JSON.stringify(id).to_utf8_buffer()
+	
+		peer.put_packet(packet)
+		print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_local_port()])
+		#print("Received data: %s" % [packet.get_string_from_utf8()])
+		# Reply so it knows we received the message.
+		
+		# Keep a reference so we can keep contacting the remote peer.
+		
+		
 		
 	# Do something with the connected peers.
 	for i in range(0, peers.size()):
 		# Update authoritative data 
 		var slicedInput = peers[i]["inputs"].pop_front() 
 		if (slicedInput != null):
-			peers[i]["Player"].process_inputs(slicedInput)
+			peers[i]["Player"].process_world_update(slicedInput)
 			
 		var packet = peers[i]["socket"].get_packet()
 		if (packet):
@@ -66,10 +76,13 @@ func _process(delta):
 						if typeof(data) == TYPE_DICTIONARY:
 							
 							var receivedData = {
+								"id": int(peers[i]["id"]),
 								"time": data["time"],
 								"sidemove": data["sidemove"],
 								"upmove": data["upmove"],
-								"buttons": data["buttons"]
+								"viewangle_side": data["viewangle_side"],
+								"viewangle_up": data["viewangle_up"],
+								"buttons": data["buttons"],
 							}
 							peers[i]["inputs"].push_back(receivedData)
 							#print(peers[i]["inputs"])
@@ -83,7 +96,7 @@ func _process(delta):
 	deltaTime = Time.get_unix_time_from_system() - time
 	
 	if (deltaTime >= TIME_STEP):
-		send_authoritative_data()
+		send_world_update()
 		deltaTime = 0
 		time = Time.get_unix_time_from_system()
 	
@@ -92,11 +105,15 @@ func update_authoritative_data(player, inputs):
 	player["process_inputs"].call(inputs)
 	
 	
-func send_authoritative_data():
+func send_world_update():
+	var world_update_data = {}
 	for i in range(0, peers.size()):
-		for j in range(0, peers.size()):
-			var packet = JSON.stringify(peers[j]["Player"].get_state()).to_utf8_buffer()
-			peers[i]["socket"].put_packet(packet)
+			var packet = peers[i]["Player"].get_state()
+			world_update_data[peers[i]["id"]] = packet
+	for i in range(0, peers.size()):
+		peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
+	
+	
 	 
 func get_peers() -> Array : 
 	return peers 

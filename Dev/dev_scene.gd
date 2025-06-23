@@ -10,14 +10,17 @@ var camSpeed = 20
 func _init():
 	Engine.max_fps = 60
 	var client : ClientNode =  load("res://Client/client.tscn").instantiate()
+	var client2 : ClientNode =  load("res://Client/client.tscn").instantiate()
 	var serveur : ServerNode = load("res://Serveur/serveur.tscn").instantiate()
 	
 	add_child(client)
+	add_child(client2)
 	add_child(serveur)
 	
 	instances = {
 		"serveur" : serveur, 
-		"client" : client
+		"client" : client,
+		"client2" : client2
 	}
 	
 func get_input():
@@ -42,6 +45,7 @@ func _process(delta: float) -> void:
 		
 		ImGui.SetNextItemOpen(true)
 		if ImGui.CollapsingHeader( "Client " + str(peer["id"]) ):
+			ImGui.LabelText("", "ping: ")
 			ImGui.LabelText(  str(peer["socket"].get_packet_ip()) + ":"+ str(peer["socket"].get_local_port()), "socket: ")
 			ImGui.LabelText(  str(instances["client"].getClientPlayerLocation()), "Position client (x,y) " + ":" )
 			ImGui.LabelText(  str(peer["Player"].get_location()), "Position serveur (x,y) " + ":" )
