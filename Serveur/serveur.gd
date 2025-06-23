@@ -5,7 +5,7 @@ extends Node
 var server = UDPServer.new()
 var peers = []
 
-const TIME_STEP : int = 35 # In ms
+const TIME_STEP : float = 0.035 # In sec
 var time : float = Time.get_unix_time_from_system() 
 var deltaTime : float = 0
 
@@ -34,8 +34,6 @@ func _ready():
 	server.listen(4242)
 
 func _process(delta):
-	time = Time.get_unix_time_from_system() 
-	
 	server.poll() # Important!
 	if server.is_connection_available():
 		var peer : PacketPeerUDP = server.take_connection()
@@ -74,7 +72,7 @@ func _process(delta):
 								"buttons": data["buttons"]
 							}
 							peers[i]["inputs"].push_back(receivedData)
-							print(peers[i]["inputs"])
+							#print(peers[i]["inputs"])
 						else:
 							print("Error parsing data from client")
 							
@@ -82,21 +80,23 @@ func _process(delta):
 						print("JSON Parse Error: ", data, " in ", json_string)
 			
 	#if time > timeStep, send authoritative data 
-	deltaTime = deltaTime + Time.get_unix_time_from_system() - time
+	deltaTime = Time.get_unix_time_from_system() - time
 	
 	if (deltaTime >= TIME_STEP):
-		send_authoritative_data(null, null)
+		send_authoritative_data()
 		deltaTime = 0
+		time = Time.get_unix_time_from_system()
 	
 	
 func update_authoritative_data(player, inputs):
 	player["process_inputs"].call(inputs)
 	
 	
-func send_authoritative_data(player, inputs):
+func send_authoritative_data():
 	for i in range(0, peers.size()):
-		var packet = JSON.stringify(peers[i]["Player"].get_state()).to_utf8_buffer()
-		peers[i].put_packet(packet)
+		for j in range(0, peers.size()):
+			var packet = JSON.stringify(peers[j]["Player"].get_state()).to_utf8_buffer()
+			peers[i]["socket"].put_packet(packet)
 	 
 func get_peers() -> Array : 
 	return peers 

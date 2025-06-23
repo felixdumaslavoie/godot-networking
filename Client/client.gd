@@ -18,7 +18,10 @@ func _process(delta):
 		var connectionJSON = JSON.stringify(contactPayload) 
 		udp.put_packet(connectionJSON.to_utf8_buffer())
 	if udp.get_available_packet_count() > 0:
-		print("Connected: %s" % udp.get_packet().get_string_from_utf8())
+		#print("Connected: %s" % udp.get_packet().get_string_from_utf8())
+		var json_string = {}
+		json_string = JSON.parse_string(udp.get_packet().get_string_from_utf8())
+		
 		connected = true
 
 
