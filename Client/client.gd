@@ -21,9 +21,12 @@ func _process(delta):
 		#print("Connected: %s" % udp.get_packet().get_string_from_utf8())
 		var json_string = {}
 		json_string = JSON.parse_string(udp.get_packet().get_string_from_utf8())
-		
+		receiving_authoritative_data(json_string)
 		connected = true
 
+func receiving_authoritative_data(data : Dictionary):
+	if (data.has("x") && data.has("y") ):
+		$ClientScene/ClientPlayer.set_state(data)
 
 func send_input(inputs : Dictionary):
 	if connected: 

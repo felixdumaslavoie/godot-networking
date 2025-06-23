@@ -52,7 +52,8 @@ func _physics_process(delta: float) -> void:
 func get_state() -> Dictionary:
 	var state = {
 		"time": Time.get_unix_time_from_system(),
-		"position" :  position,
+		"x" :  position.x,
+		"y" :  position.y,
 		"speed": speed,
 	}
 	
@@ -60,7 +61,7 @@ func get_state() -> Dictionary:
 	
 
 func set_state(state : Dictionary):
-	position = state["position"]
+	position = Vector2(state["x"], state["y"])
 	speed = state["speed"]
 	
 	
