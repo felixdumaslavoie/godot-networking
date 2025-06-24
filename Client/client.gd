@@ -11,14 +11,16 @@ var connected : bool = false
 const TICK_RATE : int = 60
 var tick = 0
 
-var players = []
-var objects = []
+var world_objects = {}
 var map = []
 
 var id : int = 0
 
 func _ready():
 	udp.connect_to_host(HOST, PORT)
+	
+func set_client():
+	$ClientPlayer.is_client = true
 
 func _process(delta):
 	tick += 1
@@ -35,10 +37,29 @@ func _process(delta):
 			id = json_data["id"]
 		elif (json_data.has(str(id))):
 			if (json_data != null):
-				connected = true
+				set_world_objects(json_data)
 				receiving_world_update(json_data)
+				connected = true
 		
-	
+func set_world_objects(world_update : Dictionary):
+	var peers : Array = world_update["data"]["peers"]
+	if (id != 0):
+		for i in range(0, peers.size()):
+			var extracted_id : int = int(peers[i])
+			if (extracted_id != id):
+				var node_exists = false
+				for node in self.get_children():
+					if (node.name == str(extracted_id)):
+						node_exists = true
+					elif (!world_objects.has(str(extracted_id))):
+						var non_client_player : Player =  load("res://Shared/player.tscn").instantiate()
+						non_client_player.name = str(extracted_id)
+						add_world_object(str(extracted_id), non_client_player)
+						
+func add_world_object(id : String, object):
+
+	add_child(object)
+	world_objects[id] = object
 
 func receiving_world_update(world_update : Dictionary):
 	
@@ -50,8 +71,8 @@ func receiving_world_update(world_update : Dictionary):
 			var extracted_id : String = str(int(peers[i]))
 			if (world_update.has(extracted_id)):
 				var data : Dictionary = world_update[extracted_id]
-				print(data)
-				if (data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up")): # data verification
+				#print(data)
+				if (data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up") && data.has("sidemove") && data.has("upmove")): # data verification
 					var player_authoritative_data : Dictionary = {
 						"time": time_stamp,
 						"x" :  data["x"],
@@ -59,7 +80,9 @@ func receiving_world_update(world_update : Dictionary):
 						"viewangle_side": data["viewangle_side"],
 						"viewangle_up": data["viewangle_up"],
 						"speed": "speed",
-						}
+					}
+					
+					
 					
 
 func send_input(inputs : Dictionary):

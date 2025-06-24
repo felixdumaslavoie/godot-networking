@@ -59,9 +59,9 @@ func _process(delta):
 	# Do something with the connected peers.
 	for i in range(0, peers.size()):
 		# Update authoritative data 
-		var slicedInput = peers[i]["inputs"].pop_front() 
-		if (slicedInput != null):
-			peers[i]["Player"].process_world_update(slicedInput)
+		#var slicedInput = peers[i]["inputs"].pop_front() 
+		#if (slicedInput != null):
+		#	peers[i]["Player"].process_world_update(slicedInput)
 			
 		var packet = peers[i]["socket"].get_packet()
 		if (packet):
@@ -76,7 +76,6 @@ func _process(delta):
 						if typeof(data) == TYPE_DICTIONARY:
 							
 							var receivedData = {
-								"id": int(peers[i]["id"]),
 								"time": data["time"],
 								"sidemove": data["sidemove"],
 								"upmove": data["upmove"],
@@ -100,9 +99,17 @@ func _process(delta):
 		deltaTime = 0
 		time = Time.get_unix_time_from_system()
 	
+	update_world()
 	
-func update_authoritative_data(player, inputs):
-	player["process_inputs"].call(inputs)
+func update_world():
+	for i in range(0, peers.size()):
+		var inputs = peers[i]["inputs"]
+		
+		if (inputs.size() > 0):
+			print(inputs)
+			var oldest_input : Dictionary = peers[i]["inputs"].pop_back()
+			peers[i]["Player"].input_processing(oldest_input)
+			
 	
 func get_peers_ids() -> Array:
 	var peers_ids: Array = []

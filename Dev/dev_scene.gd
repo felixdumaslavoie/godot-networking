@@ -13,6 +13,8 @@ func _init():
 	var client2 : ClientNode =  load("res://Client/client.tscn").instantiate()
 	var serveur : ServerNode = load("res://Serveur/serveur.tscn").instantiate()
 	
+	client.set_client()
+	
 	add_child(client)
 	add_child(client2)
 	add_child(serveur)
