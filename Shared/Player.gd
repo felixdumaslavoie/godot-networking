@@ -32,7 +32,7 @@ func process_world_update(worldUpdateArray : Dictionary):
 	
 	direction =  Vector2(worldUpdateArray["viewangle_side"], worldUpdateArray["viewangle_up"])
 	
-	velocity = movement_direction * speed
+	#velocity = movement_direction * speed
 	
 	if (movement_direction == Vector2(0,0)):
 		velocity = Vector2()
@@ -53,8 +53,9 @@ func get_client_input():
 			"viewangle_up": direction.normalized().y,
 			"buttons": buttons,
 		}
-		$"../".send_input(inputs_object)
 		client_inputs_buffer.push_back(inputs_object)
+		
+		$"..".send_input_to_server(inputs_object)
 	
 	if (velocity != Vector2(0.0, 0.0)):
 		moving_flag = true
@@ -68,14 +69,15 @@ func client_prediction():
 		var oldest_action = client_inputs_buffer.pop_back()
 		client_processed_buffer.push_back(oldest_action)
 		
-		velocity = Vector2( oldest_action["sidemove"], oldest_action["upmove"]) * speed * speed 
-		direction = Vector2(oldest_action["viewangle_side"], oldest_action["viewangle_up"])
+		#velocity = Vector2( oldest_action["sidemove"], oldest_action["upmove"]) * speed * speed 
+		#direction = Vector2(oldest_action["viewangle_side"], oldest_action["viewangle_up"])
 	
 
 func _physics_process(delta: float) -> void:
 	if (is_client):
 		get_client_input()
 	move_and_slide()
+	
 
 func get_state() -> Dictionary:
 	

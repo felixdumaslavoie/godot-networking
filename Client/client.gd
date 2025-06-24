@@ -30,16 +30,20 @@ func _process(delta):
 		var contactPayload = {}
 		var connectionJSON = JSON.stringify(contactPayload) 
 		udp.put_packet(connectionJSON.to_utf8_buffer())
-	if udp.get_available_packet_count() > 0:
 		
+	if udp.get_available_packet_count() > 0:
 		var json_data : Dictionary = JSON.parse_string( udp.get_packet().get_string_from_utf8())
 		if (json_data.has("id")):
 			id = json_data["id"]
+			connected = true
 		elif (json_data.has(str(id))):
 			if (json_data != null):
 				set_world_objects(json_data)
 				receiving_world_update(json_data)
-				connected = true
+				
+		
+	
+	
 		
 func set_world_objects(world_update : Dictionary):
 	var peers : Array = world_update["data"]["peers"]
@@ -85,7 +89,8 @@ func receiving_world_update(world_update : Dictionary):
 					
 					
 
-func send_input(inputs : Dictionary):
+func send_input_to_server(inputs : Dictionary):
+	
 	if connected: 
 		var serialized_inputs = JSON.stringify(inputs)
 		udp.put_packet(serialized_inputs.to_utf8_buffer())

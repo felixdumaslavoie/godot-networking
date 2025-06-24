@@ -122,7 +122,6 @@ script = ExtResource("1_iyx2n")
 z_index = 1
 motion_mode = 1
 script = ExtResource("2_mfuie")
-is_server = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientPlayer"]
 sprite_frames = SubResource("SpriteFrames_mfuie")

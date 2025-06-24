@@ -2,7 +2,5 @@
 
 [ext_resource type="Script" uid="uid://h0p3saxa1onr" path="res://Serveur/serveur.gd" id="1_vfqig"]
 
-[node name="Serveur" type="Node"]
+[node name="ServerScene" type="Node2D"]
 script = ExtResource("1_vfqig")
-
-[node name="ServerScene" type="Node2D" parent="."]

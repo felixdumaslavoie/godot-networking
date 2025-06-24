@@ -63,19 +63,20 @@ func _process(delta):
 		#if (slicedInput != null):
 		#	peers[i]["Player"].process_world_update(slicedInput)
 			
+		#print(peers[i]["socket"].get_packet())
 		var packet = peers[i]["socket"].get_packet()
 		if (packet):
 			var json_string : Dictionary = {}
 			
 			if (JSON.parse_string(packet.get_string_from_utf8()) != null ):
 				json_string = JSON.parse_string(packet.get_string_from_utf8())
-			
+				
 				if (json_string != null):
 					var data : Dictionary = json_string
 					if data:
 						if typeof(data) == TYPE_DICTIONARY:
-							
 							var receivedData = {
+								"id": i,
 								"time": data["time"],
 								"sidemove": data["sidemove"],
 								"upmove": data["upmove"],
@@ -84,6 +85,8 @@ func _process(delta):
 								"buttons": data["buttons"],
 							}
 							peers[i]["inputs"].push_back(receivedData)
+							
+							
 							#print(peers[i]["inputs"])
 						else:
 							print("Error parsing data from client")
@@ -106,8 +109,8 @@ func update_world():
 		var inputs = peers[i]["inputs"]
 		
 		if (inputs.size() > 0):
-			print(inputs)
 			var oldest_input : Dictionary = peers[i]["inputs"].pop_back()
+			
 			peers[i]["Player"].input_processing(oldest_input)
 			
 	
@@ -131,8 +134,8 @@ func send_world_update():
 	
 	## Sending information
 	for i in range(0, peers.size()):
-		peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
-	
+		#peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
+		pass
 	
 	 
 func get_peers() -> Array : 
