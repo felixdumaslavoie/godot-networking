@@ -23,8 +23,9 @@ func _ready() -> void:
 	var position : Vector2 =  Vector2(0,0)
 	$AnimatedSprite2D.play("walk_right")
 	$AnimatedSprite2D.stop()
-	if (is_server == true):
+	if (is_server != true):
 		$AnimatedSprite2D.material = null
+		
 
 func process_world_update(worldUpdateArray : Dictionary):
 	

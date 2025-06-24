@@ -16,7 +16,13 @@ var map = []
 
 var id : int = 0
 
+func _init() -> void:
+	var player = load("res://Shared/player.tscn").instantiate()
+	player.name = "ClientPlayer"
+	add_child(player)
+
 func _ready():
+
 	udp.connect_to_host(HOST, PORT)
 	
 func set_client():

@@ -18,10 +18,11 @@ func createID() -> int :
 	return latestId
 	
 
-
 func addNewClient(peer : PacketPeerUDP) -> Dictionary :
 	
-	var newPlayer = load("res://Shared/player.tscn").instantiate()
+	var newPlayer : Player = load("res://Shared/player.tscn").instantiate()
+	newPlayer.is_server = true
+	newPlayer.z_index = -1
 	add_child(newPlayer)
 	
 	var initPeer : Dictionary = {
