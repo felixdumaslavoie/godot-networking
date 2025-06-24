@@ -24,7 +24,7 @@ func addNewClient(peer : PacketPeerUDP) -> Dictionary :
 	var newPlayer = load("res://Shared/player.tscn").instantiate()
 	add_child(newPlayer)
 	
-	var initPeer = {
+	var initPeer : Dictionary = {
 		"id" : createID(),
 		"socket": peer,
 		"inputs": [],
@@ -104,12 +104,25 @@ func _process(delta):
 func update_authoritative_data(player, inputs):
 	player["process_inputs"].call(inputs)
 	
-	
+func get_peers_ids() -> Array:
+	var peers_ids: Array = []
+	for i in range(0, peers.size()):
+		peers_ids.push_back(int(peers[i]["id"]))
+	return peers_ids
+
 func send_world_update():
 	var world_update_data = {}
+	var data : Dictionary = {
+		"time": Time.get_unix_time_from_system(),
+		"peers": get_peers_ids(),
+	}
 	for i in range(0, peers.size()):
 			var packet = peers[i]["Player"].get_state()
 			world_update_data[peers[i]["id"]] = packet
+	
+	world_update_data["data"] = data
+	
+	## Sending information
 	for i in range(0, peers.size()):
 		peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
 	

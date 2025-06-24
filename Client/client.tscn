@@ -52,7 +52,7 @@ region = Rect2(288, 1347, 288, 394)
 atlas = ExtResource("2_e5p4w")
 region = Rect2(576, 1347, 288, 394)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_0sn4x"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_mfuie"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -111,28 +111,22 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e5p4w"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_165b5"]
 radius = 61.0
 height = 240.0
 
-[node name="Client" type="Node"]
+[node name="ClientWorld" type="Node2D"]
 script = ExtResource("1_iyx2n")
-HOST = null
-PORT = null
 
-[node name="ClientWorld" type="Node2D" parent="."]
-
-[node name="ClientPlayer" type="CharacterBody2D" parent="ClientWorld"]
+[node name="ClientPlayer" type="CharacterBody2D" parent="."]
 z_index = 1
 motion_mode = 1
 script = ExtResource("2_mfuie")
 is_client = true
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientWorld/ClientPlayer"]
-sprite_frames = SubResource("SpriteFrames_0sn4x")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ClientPlayer"]
+sprite_frames = SubResource("SpriteFrames_mfuie")
 animation = &"walk_down"
-frame = 1
-frame_progress = 0.69884
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClientWorld/ClientPlayer"]
-shape = SubResource("CapsuleShape2D_e5p4w")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClientPlayer"]
+shape = SubResource("CapsuleShape2D_165b5")

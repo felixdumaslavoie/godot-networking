@@ -31,25 +31,36 @@ func _process(delta):
 	if udp.get_available_packet_count() > 0:
 		
 		var json_data : Dictionary = JSON.parse_string( udp.get_packet().get_string_from_utf8())
-		if ( json_data.has("id")):
+		if (json_data.has("id")):
 			id = json_data["id"]
-		elif ( json_data.has(id)):
-		var json_string = {}
-		json_string = JSON.parse_string(udp.get_packet().get_string_from_utf8())
-		if (json_string != null):
-			receiving_world_update(json_string)
-			connected = true
-	
+		elif (json_data.has(str(id))):
+			if (json_data != null):
+				connected = true
+				receiving_world_update(json_data)
+		
 	
 
 func receiving_world_update(world_update : Dictionary):
 	
+	var peers : Array = world_update["data"]["peers"]
+	var time_stamp = world_update["data"]["time"]
+	
 	if (id != 0):
-		var data : Dictionary = world_update[id]
-		print(data)
-		if ( data.has("time") &&data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up")): # data verification
-			
-			pass
+		for i in range(0, peers.size()):
+			var extracted_id : String = str(int(peers[i]))
+			if (world_update.has(extracted_id)):
+				var data : Dictionary = world_update[extracted_id]
+				print(data)
+				if (data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up")): # data verification
+					var player_authoritative_data : Dictionary = {
+						"time": time_stamp,
+						"x" :  data["x"],
+						"y" :  data["y"],
+						"viewangle_side": data["viewangle_side"],
+						"viewangle_up": data["viewangle_up"],
+						"speed": "speed",
+						}
+					
 
 func send_input(inputs : Dictionary):
 	if connected: 
@@ -58,11 +69,11 @@ func send_input(inputs : Dictionary):
 		
 		
 func getClientPlayerLocation() -> Vector2 :
-		return $ClientWorld/ClientPlayer.get_location()
+		return $ClientPlayer.get_location()
 		
 func set_id(id : int):
 	self.id = id
-	$ClientWorld/ClientPlayer.id = id
+	$ClientPlayer.id = id
 
 func get_id() -> int: 
 	return self.id

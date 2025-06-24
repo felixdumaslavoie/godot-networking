@@ -16,8 +16,6 @@ var moving_flag = false
 var client_inputs_buffer : Array = []
 var client_processed_buffer : Array = []
 
-var last_authoritative_time : float = 0
-
 
 func _ready() -> void:
 	var position : Vector2 =  Vector2(0,0)
@@ -51,7 +49,7 @@ func get_client_input():
 			"viewangle_up": direction.normalized().y,
 			"buttons": buttons,
 		}
-		$"../..".send_input(inputs_object)
+		$"../".send_input(inputs_object)
 		client_inputs_buffer.push_back(inputs_object)
 	
 	if (velocity != Vector2(0.0, 0.0)):
@@ -81,13 +79,11 @@ func _physics_process(delta: float) -> void:
 func get_state() -> Dictionary:
 	
 	var state = {
-		"time": Time.get_unix_time_from_system(),
-		"id": id,
 		"x" :  position.x,
 		"y" :  position.y,
 		"viewangle_side": direction.x,
 		"viewangle_up": direction.y,
-		"speed": speed,
+		"buttons": [],
 	}
 	#print(state)
 	
