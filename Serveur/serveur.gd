@@ -123,6 +123,7 @@ func send_world_update():
 	var world_update_data = {}
 	var data : Dictionary = {
 		"peers": get_peers_ids(),
+		"pingTime": Time.get_unix_time_from_system(),
 	}
 	for i in range(0, peers.size()):
 			var packet = peers[i]["Player"].get_state()

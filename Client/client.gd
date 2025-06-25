@@ -17,6 +17,9 @@ var map = []
 
 var id : int = 0 # client id
 
+var ping : float = 0
+var ping_last_time : float = 0
+
 func _init() -> void:
 	var player = load("res://Shared/player.tscn").instantiate()
 	player.name = "ClientPlayer"
@@ -28,7 +31,9 @@ func _ready():
 	udp.connect_to_host(HOST, PORT)
 	
 func set_client():
-	$ClientPlayer.is_client = true
+	player_reference.is_client = true
+func remove_client():
+	player_reference.is_client = false
 
 func _process(delta):
 	tick += 1
@@ -75,7 +80,16 @@ func add_world_object(id : String, object):
 	add_child(object)
 	world_objects[id] = object
 
+func is_client() -> bool :
+	return player_reference.is_client
+
+func calculate_ping():
+	ping = (Time.get_unix_time_from_system() - ping_last_time) * 1000 * 60
+
 func receiving_world_update(world_update : Dictionary):
+	calculate_ping()
+
+	
 	var peers : Array = world_update["data"]["peers"]
 	
 	for i in range(0, peers.size()):
@@ -105,7 +119,7 @@ func send_input_to_server(inputs : Dictionary):
 	if connected: 
 		var serialized_inputs = JSON.stringify(inputs)
 		udp.put_packet(serialized_inputs.to_utf8_buffer())
-		
+		ping_last_time = Time.get_unix_time_from_system()
 		
 func getClientPlayerLocation() -> Vector2 :
 		return $ClientPlayer.get_location()

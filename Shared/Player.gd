@@ -8,7 +8,7 @@ class_name Player
 @export var is_client : bool = false
 @export var is_server : bool = false
 
-const LERP_RATE : float = 0.08
+const LERP_RATE : float = 0.7
 
 ## Client 
 var id : int = 0
@@ -47,13 +47,20 @@ func client_prediction():
 
 #server reconcialiation
 
-
+func reconciliate(idx: int , player_world_update : Dictionary):
+	var time_stamp : float = float(player_world_update["time"])
+	
+	while(idx < client_processed_buffer.size()):
+		client_processed_buffer[idx] = player_world_update
+		position = lerp(position, Vector2(player_world_update["x"], player_world_update["y"]), LERP_RATE)
+		#move_and_slide()
+		idx+=1 
+		
 
 
 
 #syncing with server
 func process_world_update(player_world_update : Dictionary):
-	
 	
 	if (is_client):
 		#print(player_world_update["time"])
@@ -62,7 +69,6 @@ func process_world_update(player_world_update : Dictionary):
 		if (last_authoritative_time == 0.0):
 			last_authoritative_time = new_authoritative_time
 
-		
 		## On recule jusqu'au dernier temps d'autorité
 		## On discarte tout ce qui est avant ce temps
 		for i in range(client_processed_buffer.size() - 1, 0 , -1):
@@ -73,18 +79,19 @@ func process_world_update(player_world_update : Dictionary):
 				#client_processed_buffer.push_back(temp)
 				
 		
-		print(client_processed_buffer.size())
+		#print(client_processed_buffer.size())
 		
 		## À chaque temps d'autorité qu'on a
 		## On vérifie si les coordonnées pour ce temps sont les même
+		var idx = 0
 		for buffer in client_processed_buffer:
-			
 			if(float(buffer["time"])  > new_authoritative_time):
 				break
 			if (float(buffer["time"]) == new_authoritative_time):
 				if (float(player_world_update["x"]) != float(buffer["x"]) || float(player_world_update["y"]) != float(buffer["y"])):
-					print("error")
-			
+					reconciliate(idx, player_world_update)
+					
+			idx += 1
 				
 		
 		
