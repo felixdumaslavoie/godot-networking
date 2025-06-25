@@ -77,7 +77,6 @@ func add_world_object(id : String, object):
 
 func receiving_world_update(world_update : Dictionary):
 	var peers : Array = world_update["data"]["peers"]
-	var time_stamp = world_update["data"]["time"]
 	
 	for i in range(0, peers.size()):
 		var extracted_id : String = str(int(peers[i]))
@@ -86,11 +85,11 @@ func receiving_world_update(world_update : Dictionary):
 			
 			var data : Dictionary = world_update[extracted_id]
 			#print(data)
-			if (data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up")): # data verification
+			if (data.has("time") && data.has("x") && data.has("y") && data.has("viewangle_side") && data.has("viewangle_up")): # data verification
 				
 				var player_authoritative_data : Dictionary = {
 					"id": extracted_id,
-					"time": time_stamp,
+					"time": data["time"],
 					"x" :  data["x"],
 					"y" :  data["y"],
 					"viewangle_side": data["viewangle_side"],

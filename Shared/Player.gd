@@ -16,8 +16,9 @@ var moving_flag = false
 var client_inputs_buffer : Array = []
 var client_processed_buffer : Array = []
 
-var last_authoritative_time : float = 0
+var last_authoritative_time : float = 0.0
 
+var last_processed_timestamp : float = 0.0
 
 func _ready() -> void:
 	var position : Vector2 =  Vector2(0,0)
@@ -32,27 +33,67 @@ func client_prediction():
 		
 		var move = client_inputs_buffer.pop_back()
 		#print(move["sidemove"])
-	
+		
+		move["x"] = position.x
+		move["y"] = position.y
 		position += Vector2(move["sidemove"] ,move["upmove"])
+		
+		last_processed_timestamp = float(move["time"])
+		
+		
+		#print("processed timestamp "+  str(last_processed_timestamp))
 		
 		client_processed_buffer.push_back(move)
 
 #server reconcialiation
+
+
+
+
+
+#syncing with server
 func process_world_update(player_world_update : Dictionary):
+	
+	
 	if (is_client):
+		#print(player_world_update["time"])
+		var new_authoritative_time : float = float(player_world_update["time"])
 		
-		var authoritative_time : float = player_world_update["time"]
+		if (last_authoritative_time == 0.0):
+			last_authoritative_time = new_authoritative_time
+
 		
-		for processed_input in client_processed_buffer:
+		## On recule jusqu'au dernier temps d'autorité
+		## On discarte tout ce qui est avant ce temps
+		for i in range(client_processed_buffer.size() - 1, 0 , -1):
+			#print(str(temp["time"]) + " " + str(last_authoritative_time))
+			if(float(client_processed_buffer[i]["time"]) < last_authoritative_time):
+				var temp = client_processed_buffer.pop_at(i)
+				i-=1
+				#client_processed_buffer.push_back(temp)
+				
+		
+		print(client_processed_buffer.size())
+		
+		## À chaque temps d'autorité qu'on a
+		## On vérifie si les coordonnées pour ce temps sont les même
+		for buffer in client_processed_buffer:
 			
-			if (float(processed_input["time"]) < float(authoritative_time)):
-				print(processed_input["time"])
+			if(float(buffer["time"])  > new_authoritative_time):
+				break
+			if (float(buffer["time"]) == new_authoritative_time):
+				if (float(player_world_update["x"]) != float(buffer["x"]) || float(player_world_update["y"]) != float(buffer["y"])):
+					print("error")
 			
+				
+		
+		
+
 			
 
+		last_authoritative_time = new_authoritative_time
 			#position = lerp(position, Vector2(player_world_update["x"], player_world_update["y"]), LERP_RATE)
 			#direction = Vector2(player_world_update["viewangle_side"], player_world_update["viewangle_up"])
-		last_authoritative_time = authoritative_time
 	#position = Vector2(player_world_update["x"], player_world_update["y"])
 
 func get_client_input():
@@ -62,18 +103,20 @@ func get_client_input():
 	var normalizedVector = velocity.normalized()
 	var buttons = []
 	
-	if (moving_flag):
-		var inputs_object = {
-			"time": Time.get_unix_time_from_system(),
-			"sidemove": normalizedVector.x,
-			"upmove": normalizedVector.y,
-			"viewangle_side": direction.normalized().x,
-			"viewangle_up": direction.normalized().y,
-			"buttons": buttons,
-		}
-		client_inputs_buffer.push_back(inputs_object)
+	
+	var inputs_object = {
+		"time": Time.get_unix_time_from_system(),
+		"sidemove": normalizedVector.x,
+		"upmove": normalizedVector.y,
+		"viewangle_side": direction.normalized().x,
+		"viewangle_up": direction.normalized().y,
+		"buttons": buttons,
+	}
+	client_inputs_buffer.push_back(inputs_object)
+	
+	$"..".send_input_to_server(inputs_object)
+
 		
-		$"..".send_input_to_server(inputs_object)
 	
 	if (velocity != Vector2(0.0, 0.0)):
 		moving_flag = true
@@ -95,6 +138,7 @@ func _physics_process(delta: float) -> void:
 func get_state() -> Dictionary:
 	
 	var state = {
+		"time": last_processed_timestamp,
 		"x" :  position.x,
 		"y" :  position.y,
 		"viewangle_side": direction.x,
@@ -123,4 +167,6 @@ func input_processing(oldest_input : Dictionary) :
 	
 	velocity = input_direction * speed
 	direction = heading_to
+	
+	last_processed_timestamp = float(oldest_input["time"])
 	#get_tree().quit()

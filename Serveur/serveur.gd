@@ -87,7 +87,6 @@ func _process(delta):
 							}
 							peers[i]["inputs"].push_back(receivedData)
 							
-							
 							#print(peers[i]["inputs"])
 						else:
 							print("Error parsing data from client")
@@ -123,7 +122,6 @@ func get_peers_ids() -> Array:
 func send_world_update():
 	var world_update_data = {}
 	var data : Dictionary = {
-		"time": Time.get_unix_time_from_system(),
 		"peers": get_peers_ids(),
 	}
 	for i in range(0, peers.size()):
