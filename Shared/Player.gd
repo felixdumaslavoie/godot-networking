@@ -8,7 +8,7 @@ class_name Player
 @export var is_client : bool = false
 @export var is_server : bool = false
 
-const LERP_RATE : float = 0.7
+const LERP_RATE : float = 0.05
 
 ## Client 
 var id : int = 0
@@ -34,9 +34,10 @@ func client_prediction():
 		var move = client_inputs_buffer.pop_back()
 		#print(move["sidemove"])
 		
-		move["x"] = position.x
 		move["y"] = position.y
-		position += Vector2(move["sidemove"] ,move["upmove"])
+		move["x"] = position.x
+		#position += Vector2(move["sidemove"] ,move["upmove"])
+		position = lerp(position, Vector2(position.x + move["sidemove"], position.y + move["upmove"]), LERP_RATE)
 		
 		last_processed_timestamp = float(move["time"])
 		

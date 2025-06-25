@@ -4,7 +4,8 @@ var instances = {}
 
 var t = 0.0
 
-var camSpeed = 20
+const CAM_SPEED : float = 200
+const CAM_ZOOM_SPEED : float = 50
 
 const number_of_clients : int = 2
 
@@ -43,17 +44,17 @@ func switch_client():
 	
 func get_input( delta : float):
 	if Input.is_action_pressed("zoom_in"):
-		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x + 0.25, t)
-		$Camera2D.zoom.y  = lerp($Camera2D.zoom.y, $Camera2D.zoom.y + 0.25, t)
+		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x + CAM_ZOOM_SPEED * delta, t)
+		$Camera2D.zoom.y  = lerp($Camera2D.zoom.y, $Camera2D.zoom.y + CAM_ZOOM_SPEED * delta, t)
 	if Input.is_action_pressed("zoom_out"):
-		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x - 0.25, t)
-		$Camera2D.zoom.y  =  lerp($Camera2D.zoom.y, $Camera2D.zoom.y - 0.25, t)
+		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x - CAM_ZOOM_SPEED * delta, t)
+		$Camera2D.zoom.y  =  lerp($Camera2D.zoom.y, $Camera2D.zoom.y - CAM_ZOOM_SPEED * delta, t)
 		
 	if Input.is_action_just_pressed("switch_client"):
 		switch_client()
 	
 	var input_direction = Input.get_vector("left", "right", "up", "down")
-	$Camera2D.position += input_direction * camSpeed * delta
+	$Camera2D.position += input_direction * CAM_SPEED * delta
 	
 
 func _process(delta: float) -> void:
