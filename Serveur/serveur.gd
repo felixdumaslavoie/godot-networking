@@ -111,7 +111,6 @@ func update_world():
 		
 		if (inputs.size() > 0):
 			var oldest_input : Dictionary = peers[i]["inputs"].pop_back()
-			
 			peers[i]["Player"].input_processing(oldest_input)
 			
 	
@@ -135,8 +134,8 @@ func send_world_update():
 	
 	## Sending information
 	for i in range(0, peers.size()):
-		#peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
-		pass
+		peers[i]["socket"].put_packet(JSON.stringify(world_update_data).to_utf8_buffer())
+		
 	
 	 
 func get_peers() -> Array : 

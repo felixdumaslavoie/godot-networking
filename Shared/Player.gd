@@ -27,16 +27,33 @@ func _ready() -> void:
 		$AnimatedSprite2D.material = null
 		
 
-func process_world_update(worldUpdateArray : Dictionary):
+func client_prediction():
+	if (client_inputs_buffer.size() > 0):
+		
+		var move = client_inputs_buffer.pop_back()
+		#print(move["sidemove"])
 	
-	var movement_direction = Vector2(worldUpdateArray["sidemove"], worldUpdateArray["upmove"])
-	
-	direction =  Vector2(worldUpdateArray["viewangle_side"], worldUpdateArray["viewangle_up"])
-	
-	#velocity = movement_direction * speed
-	
-	if (movement_direction == Vector2(0,0)):
-		velocity = Vector2()
+		position += Vector2(move["sidemove"] ,move["upmove"])
+		
+		client_processed_buffer.push_back(move)
+
+#server reconcialiation
+func process_world_update(player_world_update : Dictionary):
+	if (is_client):
+		
+		var authoritative_time : float = player_world_update["time"]
+		
+		for processed_input in client_processed_buffer:
+			
+			if (float(processed_input["time"]) < float(authoritative_time)):
+				print(processed_input["time"])
+			
+			
+
+			#position = lerp(position, Vector2(player_world_update["x"], player_world_update["y"]), LERP_RATE)
+			#direction = Vector2(player_world_update["viewangle_side"], player_world_update["viewangle_up"])
+		last_authoritative_time = authoritative_time
+	#position = Vector2(player_world_update["x"], player_world_update["y"])
 
 func get_client_input():
 	var input_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -44,7 +61,7 @@ func get_client_input():
 	
 	var normalizedVector = velocity.normalized()
 	var buttons = []
-
+	
 	if (moving_flag):
 		var inputs_object = {
 			"time": Time.get_unix_time_from_system(),
@@ -65,19 +82,14 @@ func get_client_input():
 		moving_flag = false	
 
 
-func client_prediction():
-	if (client_inputs_buffer.size() > 0):
-		var oldest_action = client_inputs_buffer.pop_back()
-		client_processed_buffer.push_back(oldest_action)
-		
-		#velocity = Vector2( oldest_action["sidemove"], oldest_action["upmove"]) * speed * speed 
-		#direction = Vector2(oldest_action["viewangle_side"], oldest_action["viewangle_up"])
-	
+
 
 func _physics_process(delta: float) -> void:
 	if (is_client):
 		get_client_input()
+		client_prediction()
 	move_and_slide()
+	
 	
 
 func get_state() -> Dictionary:
@@ -93,22 +105,7 @@ func get_state() -> Dictionary:
 	
 	return state
 	
-# Server reconciliation
-func set_state(state : Dictionary):
-	# Lerp authoritative corrections
-	#print(state)
-	
-	
-	var request_time = state["time"]
-	
-	for processed_input in client_processed_buffer:
-		pass
-		
-		
-		
-	
-	#position = lerp(position, Vector2(state["x"], state["y"]), LERP_RATE)
-	#direction = Vector2(state["viewangle_side"], state["viewangle_up"])
+
 
 	
 func get_location() -> Vector2:
@@ -122,6 +119,8 @@ func get_location() -> Vector2:
 #
 func input_processing(oldest_input : Dictionary) :
 	var input_direction = Vector2(oldest_input["sidemove"],oldest_input["upmove"] )
-	velocity = input_direction * speed
+	var heading_to = Vector2(oldest_input["viewangle_side"],oldest_input["viewangle_up"] )
 	
+	velocity = input_direction * speed
+	direction = heading_to
 	#get_tree().quit()
