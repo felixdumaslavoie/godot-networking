@@ -2,10 +2,10 @@ extends Node
 
 var instances = {}
 
-var t = 0.0
+const t = 0.008
 
 const CAM_SPEED : float = 200
-const CAM_ZOOM_SPEED : float = 50
+const CAM_ZOOM_SPEED : float = 1
 
 const number_of_clients : int = 2
 
@@ -44,11 +44,11 @@ func switch_client():
 	
 func get_input( delta : float):
 	if Input.is_action_pressed("zoom_in"):
-		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x + CAM_ZOOM_SPEED * delta, t)
-		$Camera2D.zoom.y  = lerp($Camera2D.zoom.y, $Camera2D.zoom.y + CAM_ZOOM_SPEED * delta, t)
+		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x + CAM_ZOOM_SPEED, t)
+		$Camera2D.zoom.y  = lerp($Camera2D.zoom.y, $Camera2D.zoom.y + CAM_ZOOM_SPEED, t)
 	if Input.is_action_pressed("zoom_out"):
-		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x - CAM_ZOOM_SPEED * delta, t)
-		$Camera2D.zoom.y  =  lerp($Camera2D.zoom.y, $Camera2D.zoom.y - CAM_ZOOM_SPEED * delta, t)
+		$Camera2D.zoom.x = lerp($Camera2D.zoom.x, $Camera2D.zoom.x - CAM_ZOOM_SPEED, t)
+		$Camera2D.zoom.y  =  lerp($Camera2D.zoom.y, $Camera2D.zoom.y - CAM_ZOOM_SPEED, t)
 		
 	if Input.is_action_just_pressed("switch_client"):
 		switch_client()
@@ -78,4 +78,5 @@ func _process(delta: float) -> void:
 	get_input(delta)
 	
 func _physics_process(delta: float) -> void:
-	t += delta * 0.01
+	#t += delta * 0.01
+	pass

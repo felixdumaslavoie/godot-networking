@@ -42,8 +42,6 @@ func client_prediction():
 		last_processed_timestamp = float(move["time"])
 		
 		
-		#print("processed timestamp "+  str(last_processed_timestamp))
-		
 		client_processed_buffer.push_back(move)
 
 #server reconcialiation
@@ -172,6 +170,8 @@ func get_location() -> Vector2:
 func input_processing(oldest_input : Dictionary) :
 	var input_direction = Vector2(oldest_input["sidemove"],oldest_input["upmove"] )
 	var heading_to = Vector2(oldest_input["viewangle_side"],oldest_input["viewangle_up"] )
+	
+	
 	
 	velocity = input_direction * speed
 	direction = heading_to

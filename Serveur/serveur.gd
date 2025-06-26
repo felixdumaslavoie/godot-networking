@@ -39,6 +39,7 @@ func _ready():
 
 func _process(delta):
 	tick += 1
+	
 	server.poll() # Important!
 	if server.is_connection_available():
 		var peer : PacketPeerUDP = server.take_connection()
@@ -56,7 +57,7 @@ func _process(delta):
 		# Keep a reference so we can keep contacting the remote peer.
 		
 		
-		
+	
 	# Do something with the connected peers.
 	for i in range(0, peers.size()):
 		# Update authoritative data 
@@ -102,9 +103,13 @@ func _process(delta):
 		deltaTime = 0
 		time = Time.get_unix_time_from_system()
 	
+
 	update_world()
 	
+	
+	
 func update_world():
+	
 	for i in range(0, peers.size()):
 		var inputs = peers[i]["inputs"]
 		
@@ -112,6 +117,7 @@ func update_world():
 			var oldest_input : Dictionary = peers[i]["inputs"].pop_back()
 			peers[i]["Player"].input_processing(oldest_input)
 			
+
 	
 func get_peers_ids() -> Array:
 	var peers_ids: Array = []
